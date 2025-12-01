@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calorie & Macro Calculator for Bodybuilders</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-dark: #121212;
+    --bg-light: #f7fafc;
+    --card-dark: #1f1f1f;
+    --card-light: #fff;
+    --text-dark: #f0f0f0;
+    --text-light: #0f172a;
+    --accent: #4f46e5;
+    --muted-dark: #a0a0a0;
+    --muted-light: #6b7280;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+  }
+
+  body{
+    margin:0;
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-dark);
+    padding:20px;
+    transition: all 0.3s;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+  body.light{
+    background: var(--bg-light);
+    color: var(--text-light);
+  }
+
+  .container{
+    max-width:900px;
+    margin:auto;
+    background: var(--card-dark);
+    border-radius:16px;
+    padding:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    transition: all 0.3s;
+  }
+  body.light .container{
+    background: var(--card-light);
+    box-shadow:0 10px 30px rgba(16,24,40,.1);
+  }
+
+  h1{
+    font-size:28px; 
+    margin-bottom:20px;
+    font-weight:700;
+    text-align:center;
+    color: var(--accent);
+  }
+
+  form{ display:flex; flex-wrap:wrap; gap:15px; }
+  label{ display:block; margin-top:10px; font-size:14px; font-weight:500; }
+  input[type="number"], select{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #555;
+    font-size:15px;
+    box-sizing:border-box;
+    background: transparent;
+    color: inherit;
+    transition: all 0.3s;
+  }
+  body.light input, body.light select{
+    border:1px solid #ccc;
+  }
+
+  .row{ display:flex; gap:15px; flex:1 1 100%; }
+  .row > *{ flex:1; }
+  .btn{
+    margin-top:16px;
+    padding:12px 20px;
+    border:none;
+    border-radius:12px;
+    background: var(--accent);
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+    font-size:16px;
+    transition: all 0.3s;
+  }
+  .btn:hover{ opacity:0.9; }
+
+  .results{ margin-top:25px; }
+  .result-item{
+    margin-bottom:15px; 
+    padding:15px; 
+    background: #272727; 
+    border-radius:12px; 
+    transition: all 0.3s;
+  }
+  body.light .result-item{ background:#f3f4f6; }
+
+  .big{ font-size:22px; font-weight:700; }
+  .small{ font-size:13px; color:#a0a0a0; }
+  body.light .small{ color:#6b7280; }
+
+  .macro-bar{ height:14px; border-radius:999px; background:#333; overflow:hidden; margin-top:5px; }
+  body.light .macro-bar{ background:#e6eefb; }
+  .macro-fill{ height:100%; transition: width 0.5s ease; }
+
+  .toggle-btn{
+    margin-bottom:20px;
+    padding:10px 16px;
+    border:none;
+    border-radius:12px;
+    background:#555;
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+  }
+  body.light .toggle-btn{
+    background:#ccc;
+    color:#111;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:20px;
+    padding:10px 0;
+    font-size:13px;
+    color: var(--muted-dark);
+    transition: all 0.3s;
+  }
+  body.light footer{
+    color: var(--muted-light);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <button class="toggle-btn" onclick="toggleMode()">Toggle Light/Dark Mode</button>
+  <h1>Calorie & Macro Calculator</h1>
+  <form id="calcForm" onsubmit="event.preventDefault(); calculate();">
+    <div class="row">
+      <div>
+        <label>Weight (kg)</label>
+        <input type="number" id="weight" min="0" step="0.1" />
+      </div>
+      <div>
+        <label>Height (cm)</label>
+        <input type="number" id="height" min="0" step="0.1" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Age (years)</label>
+        <input type="number" id="age" min="0" />
+      </div>
+      <div>
+        <label>Gender</label>
+        <select id="gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Activity Level</label>
+    <select id="activity">
+      <option value="1.2">Sedentary (little or no exercise)</option>
+      <option value="1.375">Lightly active (1-3 days/week)</option>
+      <option value="1.55">Moderately active (3-5 days/week)</option>
+      <option value="1.725">Very active (6-7 days/week)</option>
+      <option value="1.9">Extra active (hard training or physical job)</option>
+    </select>
+
+    <label>Goal</label>
+    <select id="goal">
+      <option value="maintain">Maintain Weight</option>
+      <option value="mild_loss">Mild Loss (~0.25kg/week)</option>
+      <option value="moderate_loss">Moderate Loss (~0.5kg/week)</option>
+      <option value="aggressive_loss">Aggressive Loss (~1kg/week)</option>
+      <option value="mild_gain">Mild Gain (~0.25kg/week)</option>
+      <option value="moderate_gain">Moderate Gain (~0.5kg/week)</option>
+    </select>
+
+    <label>Protein Percentage (optional)</label>
+    <input type="number" id="proteinPercent" min="10" max="50" />
+
+    <label>Body Type</label>
+    <select id="bodyType">
+      <option value="normal">Regular</option>
+      <option value="athlete">Athlete / Bodybuilder</option>
+    </select>
+
+    <label>Body Fat % (Optional)</label>
+    <input type="number" id="bodyFat" min="3" max="60" step="0.1" placeholder="Optional" />
+
+    <button class="btn" type="submit">Calculate</button>
+  </form>
+
+  <div class="results">
+    <div class="result-item">
+      <div class="small">BMR (Basal Metabolic Rate)</div>
+      <div id="bmr" class="big">0</div>
+    </div>
+
+    <div class="result-item">
+      <div class="small">TDEE (Total Daily Energy Expenditure)</div>
+      <div id="tdee" class="big">0</div>
+    </div>
+
+    <div class="result-item">
+      <div class="small">Target Calories</div>
+      <div id="targetCal" class="big">0</div>
+    </div>
+
+    <div class="result-item">
+      <div class="small">BMI (Body Mass Index)</div>
+      <div id="bmi" class="big">0</div>
+      <div id="bmiText" class="small">—</div>
+    </div>
+
+    <div class="result-item">
+      <div class="small">Macros (Percent & Grams)</div>
+      <div id="macrosSummary" class="small">—</div>
+      <div class="small">Protein (<span id="proteinPct">0</span>%) — <strong id="proteinGr">0</strong> g</div>
+      <div class="macro-bar"><div id="protBar" class="macro-fill" style="width:0%; background:#4f46e5;"></div></div>
+      <div class="small">Carbs (<span id="carbPct">0</span>%) — <strong id="carbGr">0</strong> g</div>
+      <div class="macro-bar"><div id="carbBar" class="macro-fill" style="width:0%; background:#f59e0b;"></div></div>
+      <div class="small">Fats (<span id="fatPct">0</span>%) — <strong id="fatGr">0</strong> g</div>
+      <div class="macro-bar"><div id="fatBar" class="macro-fill" style="width:0%; background:#ef4444;"></div></div>
+    </div>
+  </div>
+</div>
+
+<footer>By / Cap Mohamed Abd-El Aziz</footer>
+
+<script>
+function toggleMode(){
+  document.body.classList.toggle('light');
+}
+
+function calculate(){
+  const weight = parseFloat(document.getElementById('weight').value);
+  const height = parseFloat(document.getElementById('height').value);
+  const age = parseFloat(document.getElementById('age').value);
+  const gender = document.getElementById('gender').value;
+  const activity = parseFloat(document.getElementById('activity').value);
+  const goal = document.getElementById('goal').value;
+  let proteinPctInput = parseFloat(document.getElementById('proteinPercent').value);
+  const bodyType = document.getElementById('bodyType').value;
+  const bodyFatInput = parseFloat(document.getElementById('bodyFat').value);
+
+  if(!weight || !height || !age || !activity){ alert('Please fill in all required fields'); return; }
+
+  const bmr = (10 * weight) + (6.25 * height) - (5 * age) + (gender==='male'?5:-161);
+  const tdee = bmr * activity;
+
+  let adjPct = 0;
+  switch(goal){
+    case 'mild_loss': adjPct=-0.15; break;
+    case 'moderate_loss': adjPct=-0.25; break;
+    case 'aggressive_loss': adjPct=-0.35; break;
+    case 'mild_gain': adjPct=0.15; break;
+    case 'moderate_gain': adjPct=0.25; break;
+    default: adjPct=0; break;
+  }
+
+  const targetCal = Math.round(tdee*(1+adjPct));
+
+  const heightM = height/100;
+  const bmiVal = (weight/(heightM*heightM)).toFixed(1);
+  let bmiText='';
+
+  if(!isNaN(bodyFatInput)){
+    // استخدام Body Fat % إذا أدخل
+    if(bodyFatInput<10) bmiText='Lean';
+    else if(bodyFatInput<18) bmiText='Moderate';
+    else bmiText='High Fat';
+  } else {
+    // إذا لم يدخل، استخدام BMI الرياضي
+    if(bodyType==='athlete'){
+      if(bmiVal<18.5) bmiText='Underweight';
+      else if(bmiVal<25) bmiText='Normal / Lean Muscle';
+      else if(bmiVal<30) bmiText='Muscular (High Muscle, Low Fat)';
+      else if(bmiVal<35) bmiText='Muscular Bulk';
+      else bmiText='Excess Fat / Obese';
+    } else {
+      if(bmiVal<18.5) bmiText='Underweight';
+      else if(bmiVal<25) bmiText='Normal';
+      else if(bmiVal<30) bmiText='Overweight';
+      else bmiText='Obese';
+    }
+  }
+
+  let protPct,fatPct,carbPct;
+  if(proteinPctInput){ 
+    protPct=proteinPctInput; fatPct=30; carbPct=100-protPct-fatPct;
+    if(carbPct<10) carbPct=10;
+  }else{
+    protPct=30; fatPct=30; carbPct=40;
+  }
+
+  const proteinGr=Math.round((protPct/100*targetCal)/4);
+  const carbGr=Math.round((carbPct/100*targetCal)/4);
+  const fatGr=Math.round((fatPct/100*targetCal)/9);
+
+  document.getElementById('bmr').innerText=Math.round(bmr);
+  document.getElementById('tdee').innerText=Math.round(tdee);
+  document.getElementById('targetCal').innerText=targetCal;
+  document.getElementById('bmi').innerText=bmiVal;
+  document.getElementById('bmiText').innerText=bmiText;
+
+  document.getElementById('macrosSummary').innerText=`Protein ${protPct}% , Carbs ${carbPct}% , Fats ${fatPct}%`;
+  document.getElementById('proteinPct').innerText=protPct;
+  document.getElementById('carbPct').innerText=carbPct;
+  document.getElementById('fatPct').innerText=fatPct;
+  document.getElementById('proteinGr').innerText=proteinGr;
+  document.getElementById('carbGr').innerText=carbGr;
+  document.getElementById('fatGr').innerText=fatGr;
+
+  document.getElementById('protBar').style.width=protPct+'%';
+  document.getElementById('carbBar').style.width=carbPct+'%';
+  document.getElementById('fatBar').style.width=fatPct+'%';
+}
+</script>
+</body>
+</html>
