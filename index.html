@@ -1,39 +1,303 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Calorie & Macro Calculator for Bodybuilders</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg-dark: #121212;
-    --bg-light: #f7fafc;
-    --card-dark: #1f1f1f;
-    --card-light: #fff;
-    --text-dark: #f0f0f0;
-    --text-light: #0f172a;
-    --accent: #4f46e5;
-    --muted-dark: #a0a0a0;
-    --muted-light: #6b7280;
-    --success: #22c55e;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-  }
+<!DOCTYPE html>    
+<html lang="ar" dir="rtl">    
+<head>    
+<meta charset="utf-8">    
+<meta name="viewport" content="width=device-width, initial-scale=1.0">    
+<title>Cal Track</title>    
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">    
+<style>  
+:root{  
+  --bg-light:#f0f2f5; --card-light:#fff; --text-light:#1f2937;  
+  --bg-dark:#1e1e1e; --card-dark:#2c2c2c; --text-dark:#e5e7eb;  
+  --accent:#007bff; --accent-hover:#0056b3; --shadow-light:0 10px 30px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.05);  
+  --shadow-dark:0 10px 30px rgba(0,0,0,0.5); --success:#10b981; --warning:#f59e0b; --danger:#ef4444;  
+}  body{
+margin:0;font-family:'Cairo',sans-serif;background:var(--bg-light);color:var(--text-light);
+min-height:100vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+padding:20px 10px;
+transition: background 0.4s,color 0.4s;
+}
+body.dark{background:var(--bg-dark);color:var(--text-dark);}
+.container{
+max-width:95%;width:100%;margin:auto;background:var(--card-light);border-radius:20px;padding:30px;box-shadow:var(--shadow-light);transition: all 0.4s ease-in-out;
+box-sizing: border-box; 
+}
+body.dark .container{background:var(--card-dark);box-shadow:var(--shadow-dark);}
+/* التعديل لتوسيط العنوان */
+h1{
+font-size:32px;font-weight:900;text-align:center;color:var(--accent);margin-bottom:30px;padding-bottom:10px;border-bottom:3px solid var(--accent);
+display:block;
+width:100%;
+margin-left: 0;
+margin-right: 0;
+}
+label{display:block;margin-top:15px;margin-bottom:5px;font-size:15px;font-weight:600;color:inherit;}
+input[type="number"],select{
+width:100%;padding:14px 18px;border-radius:12px;border:1px solid #ccc;background:var(--bg-light);color:var(--text-light);font-size:16px;transition: all 0.3s;appearance:none;
+direction: rtl;
+text-align: right;
+box-sizing: border-box;
+}
+body.dark input[type="number"],body.dark select{background:#333;border-color:#555;color:var(--text-dark);}
+input[type="number"]:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,123,255,0.3);}
+.btn,.toggle-btn,.start-btn{padding:14px 25px;border:none;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;font-size:17px;transition: all 0.3s;width:100%;margin-top:25px;}
+.btn:hover,.start-btn:hover{background:var(--accent-hover);transform:translateY(-2px);}
 
-  body{
-    margin:0;
-    font-family: 'Poppins', sans-serif;
-    background: var(--bg-dark);
-    color: var(--text-dark);
-    padding:20px;
-    transition: all 0.3s;
-    display:flex;
-    flex-direction:column;
-    min-height:100vh;
-  }
-  body.light{
-    background: var(--bg-light);
+form{
+display: block;
+text-align: right;
+box-sizing: border-box;
+}
+
+#activity, #goal, #proteinPercent, #bodyType, #bodyFat {
+margin-top: 20px;
+}
+
+.row {
+display: flex;
+gap: 20px;
+width: 100%;
+margin-top: 20px;
+}
+.row > div {
+flex: 1 1 50%;
+max-width: none; 
+box-sizing: border-box;
+}
+.row input, .row select {
+width: 100% !important;
+}
+
+.results{margin-top:30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;}
+.result-item{padding:20px;border-radius:16px;background:var(--bg-light);box-shadow:0 4px 10px rgba(0,0,0,0.08);text-align:center;transition:all 0.3s;}
+body.dark .result-item{background:#3c3c3c;box-shadow:0 4px 10px rgba(0,0,0,0.3);}
+.big{font-size:28px;font-weight:900;color:var(--accent);}
+.small{font-size:14px;color:#6b7280;margin-bottom:5px;font-weight:600;}
+body.dark .small{color:#a0a0a0;}
+.macro-grid{grid-column:span full;text-align:right;display:flex;flex-direction:column;gap:10px;padding:20px;}
+.macro-bar{height:10px;border-radius:999px;background:#e0e0e0;overflow:hidden;margin-top:3px;width:100%;}
+body.dark .macro-bar{background:#333;}
+.macro-fill{height:100%;transform-origin:right;transform:scaleX(0);transition:transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);}
+.landing-container{
+max-width:550px;
+padding:40px;
+text-align:center;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+flex-grow: 1;
+box-sizing: border-box;
+}
+@media (min-width: 768px) {
+.landing-container {
+height: 100vh;
+margin: auto;
+}
+body:not(.dark) {
+justify-content: center;
+}
+}
+.logo-title{font-size:42px;font-weight:900;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;justify-content:center;}
+.logo-icon{font-size:48px;margin-left:15px;color:var(--accent);}
+.subtitle{font-size:19px;color:var(--text-light);margin-bottom:40px;font-weight:600;}
+body.dark .subtitle{color:var(--text-dark);}
+.features-list{list-style:none;padding:0;margin:0 0 50px 0;text-align:right;}
+.feature-item{display:flex;align-items:center;margin-bottom:15px;font-size:17px;font-weight:500;justify-content:flex-end;}
+.feature-icon{color:var(--success);font-size:24px;margin-right:10px;}
+.start-btn{min-width:300px;font-size:18px;margin-top:10px;}
+.toggle-btn{position:absolute;top:20px;right:20px;width:auto;padding:10px 15px;margin:0;font-size:14px;}
+footer{text-align:center;margin-top:20px;padding:10px 0;font-size:13px;color:#9ca3af;}
+body.dark footer{color:#6b7280;}
+
+/* تعديلات التوافق للشاشات الصغيرة */
+@media (max-width:768px){
+form{display: block;}
+.row{
+flex-direction:column;
+gap: 0;
+margin-top: 0;
+}
+.row > div {
+margin-top: 15px;
+max-width: 100%;
+}
+.results{grid-template-columns:1fr;}.macro-grid{grid-column:span 1;}
+}
+.hidden{display:none !important;}
+</style>
+
+</head>    
+<body>    
+<button class="toggle-btn" onclick="toggleMode()"><i class="fas fa-moon"></i> تبديل الوضع</button>
+
+<div id="landingScreen" class="container landing-container">    
+  <div class="logo-title">    
+    <span class="logo-icon"><i class="fas fa-dumbbell"></i></span> Cal Track    
+  </div>    
+  <div class="subtitle">الخوارزمية الأكثر دقة لتحديد احتياجك من السعرات والماكروز في كمال الأجسام.</div>    
+  <ul class="features-list">    
+    <li class="feature-item">حساب معدل كتلة الجسم (BMI) واجمالي السعرات (TDEE)<span class="feature-icon"><i class="fas fa-check-circle"></i></span></li>    
+    <li class="feature-item">توزيع دقيق للبروتين والكربوهيدرات والدهون حسب الهدف.<span class="feature-icon"><i class="fas fa-check-circle"></i></span></li>    
+    <li class="feature-item">دعم وضع الجسم الرياضي (Bodybuilding) للحصول على نتائج أدق.<span class="feature-icon"><i class="fas fa-check-circle"></i></span></li>    
+    <li class="feature-item">Developed By Mohamed Abd El-Aziz<span class="feature-icon"><i class="fas fa-check-circle"></i></span></li>    
+  </ul>    
+  <button class="start-btn" onclick="showCalculator()"><i class="fas fa-calculator"></i> Calculate Now</button>    
+</div>
+
+<div id="calculatorScreen" class="container hidden" style="max-width:700px;">    
+  <h1>- Calories & Macros -</h1>    
+  <form id="calcForm" onsubmit="event.preventDefault(); calculate();">    
+    <div class="row">    
+      <div><label for="weight"><i class="fas fa-weight-hanging"></i> الوزن (كجم)</label><input type="number" id="weight" min="0" step="0.1" required /></div>    
+      <div><label for="height"><i class="fas fa-ruler-vertical"></i> الطول (سم)</label><input type="number" id="height" min="0" step="0.1" required /></div>    
+    </div>    
+    <div class="row">    
+      <div><label for="age"><i class="fas fa-birthday-cake"></i> العمر (سنة)</label><input type="number" id="age" min="0" required /></div>    
+      <div><label for="gender"><i class="fas fa-venus-mars"></i> الجنس</label>    
+        <select id="gender"><option value="male">ذكر</option><option value="female">أنثى</option></select>    
+      </div>    
+    </div>    
+    <label for="activity"><i class="fas fa-running"></i> مستوى النشاط</label>    
+    <select id="activity">    
+        <option value="1.2">خامل (بدون تمرين)</option>    
+        <option value="1.375">نشاط خفيف (1-3 أيام)</option>    
+        <option value="1.55">نشاط متوسط (3-5 أيام)</option>    
+        <option value="1.725">نشاط عالي (6-7 أيام)</option>    
+        <option value="1.9">نشاط عنيف / عمل شاق</option>    
+    </select>    
+    <label for="goal"><i class="fas fa-bullseye"></i> الهدف</label>    
+    <select id="goal">    
+        <option value="maintain">ثبات الوزن</option>    
+        <option value="mild_loss">خسارة بسيطة (~0.25 كجم/أسبوع)</option>    
+        <option value="moderate_loss">خسارة متوسطة (~0.5 كجم/أسبوع)</option>    
+        <option value="aggressive_loss">خسارة قوية (~1 كجم/أسبوع)</option>    
+        <option value="mild_gain">زيادة بسيطة (~0.25 كجم/أسبوع)</option>    
+        <option value="moderate_gain">زيادة متوسطة (~0.5 كجم/أسبوع)</option>    
+    </select>    
+    <label for="bodyType"><i class="fas fa-user-check"></i> نوع الجسم</label>    
+    <select id="bodyType"><option value="normal">عادي</option><option value="athlete">رياضي / كمال أجسام</option></select>    
+    <label for="bodyFat"><i class="fas fa-percent"></i> نسبة الدهون في الجسم % — اختياري</label>    
+    <input type="number" id="bodyFat" min="3" max="60" step="0.1" placeholder="اختياري" />    
+    <button class="btn" type="submit"><i class="fas fa-chart-line"></i> احسب النتائج الآن</button>    
+  </form>      
+  
+  <div class="results">    
+    <div class="result-item" style="background-color: var(--warning); color:#fff;">    
+      <div class="small" style="color:#fff;">السعرات المستهدفة</div>    
+      <div id="targetCal" class="big" style="color:#fff;">0</div>    
+    </div>    
+    <div class="result-item">    
+      <div class="small">السعرات اليومية (TDEE)</div>    
+      <div id="tdee" class="big">0</div>    
+    </div>    
+    <div class="result-item">    
+      <div class="small">مؤشر كتلة الجسم (BMI)</div>    
+      <div id="bmi" class="big">0</div>    
+      <div id="bmiText" class="small">—</div>    
+    </div>    
+    <div class="result-item macro-grid" style="grid-column:1 / -1;">    
+      <div class="small" style="font-size:16px;">توزيع الماكروز</div>    
+      <div id="macrosSummary" class="big" style="font-size:20px;color:var(--text-light);border-bottom:1px solid #ddd;padding-bottom:10px;">—</div>    
+      <div><div class="small">بروتين (<span id="proteinPct">0</span>%) — <strong id="proteinGr">0</strong> جم</div><div class="macro-bar"><div id="protBar" class="macro-fill" style="background:var(--accent);"></div></div></div>    
+      <div><div class="small">كربوهيدرات (<span id="carbPct">0</span>%) — <strong id="carbGr">0</strong> جم</div><div class="macro-bar"><div id="carbBar" class="macro-fill" style="background:var(--success);"></div></div></div>    
+      <div><div class="small">الدهون (<span id="fatPct">0</span>%) — <strong id="fatGr">0</strong> جم</div><div class="macro-bar"><div id="fatBar" class="macro-fill" style="background:var(--danger);"></div></div></div>    
+    </div>    
+  </div>    
+</div>    
+
+<footer>By / Cap Mohamed Abd-El Aziz</footer>    
+
+<script>    
+function toggleMode(){    
+  document.body.classList.toggle('dark');    
+  const btn = document.querySelector('.toggle-btn');    
+  btn.innerHTML = document.body.classList.contains('dark') ? '<i class="fas fa-sun"></i> تبديل الوضع' : '<i class="fas fa-moon"></i> تبديل الوضع';    
+}    
+  
+function showCalculator(){    
+  document.getElementById('landingScreen').classList.add('hidden');    
+  document.getElementById('calculatorScreen').classList.remove('hidden');    
+}    
+  
+function calculate(){    
+  const weight = parseFloat(document.getElementById('weight').value);    
+  const height = parseFloat(document.getElementById('height').value);    
+  const age = parseFloat(document.getElementById('age').value);    
+  const gender = document.getElementById('gender').value;    
+  const activity = parseFloat(document.getElementById('activity').value);    
+  const goal = document.getElementById('goal').value;    
+  const bodyType = document.getElementById('bodyType').value;    
+  const bodyFatInput = parseFloat(document.getElementById('bodyFat').value);    
+  
+  // تم تثبيت نسبة البروتين على 15% كما طلبت
+  let proteinPct = 15; 
+  
+  if(!weight || !height || !age || !activity){alert('يرجى إدخال جميع البيانات المطلوبة'); return;}    
+  
+  // صيغة Mifflin-St Jeor
+  let bmr = gender==='male'? 10*weight + 6.25*height - 5*age + 5 : 10*weight + 6.25*height -5*age -161;    
+  let tdee = bmr * activity;    
+  
+  const goals = {'maintain':1,'mild_loss':0.85,'moderate_loss':0.75,'aggressive_loss':0.65,'mild_gain':1.15,'moderate_gain':1.25};    
+  let targetCal = tdee * goals[goal];    
+  
+  let bmi = weight / Math.pow(height/100,2);    
+  let bmiText = '';  
+  
+  if(!isNaN(bodyFatInput)){  
+    if(bodyFatInput < 10) bmiText = 'دهون قليلة';  
+    else if(bodyFatInput < 18) bmiText = 'دهون متوسطة';  
+    else bmiText = 'دهون مرتفعة';  
+  } else {  
+    if(bodyType === 'athlete'){  
+      if(bmi < 18.5) bmiText='نحيف';  
+      else if(bmi < 25) bmiText='جسم رياضي جيد';  
+      else if(bmi < 30) bmiText='عضلات كثيرة';  
+      else if(bmi < 35) bmiText='جسم ضخم';  
+      else bmiText='زيادة دهون';  
+    } else {  
+      if(bmi < 18.5) bmiText='نحيف';  
+      else if(bmi < 25) bmiText='طبيعي';  
+      else if(bmi < 30) bmiText='وزن زائد';  
+      else bmiText='سمنة';  
+    }  
+  }  
+  
+  let fatPct = 25; // نسبة الدهون ثابتة (بافتراض نفس القيمة من الكود الأصلي)
+  let proteinCal = targetCal * (proteinPct / 100);    
+  let proteinGr = proteinCal / 4;    
+  let fatCal = targetCal * (fatPct / 100);    
+  let fatGr = fatCal / 9;    
+  let carbCal = targetCal - proteinCal - fatCal;    
+  let carbGr = carbCal / 4;    
+  let carbPct = 100 - proteinPct - fatPct;    
+  if(carbPct < 0){ carbPct = 0; carbGr = 0; carbCal = 0; }    
+  
+  document.getElementById('tdee').innerText = Math.round(tdee);    
+  document.getElementById('targetCal').innerText = Math.round(targetCal);    
+  document.getElementById('bmi').innerText = bmi.toFixed(1);    
+  document.getElementById('bmiText').innerText = bmiText;    
+  
+  document.getElementById('proteinGr').innerText = Math.round(proteinGr);    
+  document.getElementById('carbGr').innerText = Math.round(carbGr);    
+  document.getElementById('fatGr').innerText = Math.round(fatGr);    
+  
+  document.getElementById('proteinPct').innerText = proteinPct;    
+  document.getElementById('carbPct').innerText = Math.round(carbPct);    
+  document.getElementById('fatPct').innerText = fatPct;    
+  
+  document.getElementById('protBar').style.transform=`scaleX(${proteinCal/targetCal})`;    
+  document.getElementById('carbBar').style.transform=`scaleX(${carbCal/targetCal})`;    
+  document.getElementById('fatBar').style.transform=`scaleX(${fatCal/targetCal})`;    
+}    
+</script>    
+</body>    
+</html>
     color: var(--text-light);
   }
 
@@ -330,3 +594,4 @@ function calculate(){
 </body>
 
 </html>
+
