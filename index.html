@@ -3,75 +3,87 @@
 <head>    
 <meta charset="utf-8">    
 <meta name="viewport" content="width=device-width, initial-scale=1.0">    
-<title>Cal Track</title>    
+<title>Calori Track - حاسبة السعرات وتتبع الوجبات</title>    
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">    
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">    
 <style>  
+/* === 1. متغيرات CSS والوضع الداكن/الفاتح === */
 :root{  
   --bg-light:#f0f2f5; --card-light:#fff; --text-light:#1f2937;  
   --bg-dark:#1e1e1e; --card-dark:#2c2c2c; --text-dark:#e5e7eb;  
   --accent:#007bff; --accent-hover:#0056b3; --shadow-light:0 10px 30px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.05);  
   --shadow-dark:0 10px 30px rgba(0,0,0,0.5); --success:#10b981; --warning:#f59e0b; --danger:#ef4444;  
-}  body{
-margin:0;font-family:'Cairo',sans-serif;background:var(--bg-light);color:var(--text-light);
-min-height:100vh;
-display:flex;
-flex-direction:column;
-align-items:center;
-padding:20px 10px;
-transition: background 0.4s,color 0.4s;
+}  
+body{
+    margin:0;font-family:'Cairo',sans-serif;background:var(--bg-light);color:var(--text-light);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:20px 10px;
+    transition: background 0.4s,color 0.4s;
+    direction: rtl; 
+    text-align: right;
 }
 body.dark{background:var(--bg-dark);color:var(--text-dark);}
+
 .container{
-max-width:95%;width:100%;margin:auto;background:var(--card-light);border-radius:20px;padding:30px;box-shadow:var(--shadow-light);transition: all 0.4s ease-in-out;
-box-sizing: border-box; 
+    max-width:95%;width:100%;margin:auto;background:var(--card-light);border-radius:20px;padding:30px;box-shadow:var(--shadow-light);
+    transition: all 0.4s ease-in-out, opacity 0.4s; 
+    box-sizing: border-box; 
+    opacity: 1; 
 }
 body.dark .container{background:var(--card-dark);box-shadow:var(--shadow-dark);}
-/* التعديل لتوسيط العنوان */
+
+/* === 2. أنماط عامة للواجهة (العنوان، الإدخال، الأزرار) === */
 h1{
-font-size:32px;font-weight:900;text-align:center;color:var(--accent);margin-bottom:30px;padding-bottom:10px;border-bottom:3px solid var(--accent);
-display:block;
-width:100%;
-margin-left: 0;
-margin-right: 0;
+    font-size:32px;font-weight:900;text-align:center;color:var(--accent);margin-bottom:30px;padding-bottom:10px;border-bottom:3px solid var(--accent);
+    display:block;width:100%;margin-left: 0;margin-right: 0;
 }
+h2 {
+    color: var(--text-light);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 24px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+body.dark h2 { color: var(--text-dark); }
+
 label{display:block;margin-top:15px;margin-bottom:5px;font-size:15px;font-weight:600;color:inherit;}
-input[type="number"],select{
-width:100%;padding:14px 18px;border-radius:12px;border:1px solid #ccc;background:var(--bg-light);color:var(--text-light);font-size:16px;transition: all 0.3s;appearance:none;
-direction: rtl;
-text-align: right;
-box-sizing: border-box;
+input[type="text"], input[type="number"],select{
+    width:100%;padding:14px 18px;border-radius:12px;border:1px solid #ccc;background:var(--bg-light);color:var(--text-light);font-size:16px;transition: all 0.3s;appearance:none;
+    direction: rtl;text-align: right;box-sizing: border-box;
 }
-body.dark input[type="number"],body.dark select{background:#333;border-color:#555;color:var(--text-dark);}
-input[type="number"]:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,123,255,0.3);}
-.btn,.toggle-btn,.start-btn{padding:14px 25px;border:none;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;font-size:17px;transition: all 0.3s;width:100%;margin-top:25px;}
-.btn:hover,.start-btn:hover{background:var(--accent-hover);transform:translateY(-2px);}
+body.dark input[type="text"],body.dark input[type="number"],body.dark select{background:#333;border-color:#555;color:var(--text-dark);}
+input[type="text"]:focus, input[type="number"]:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,123,255,0.3);}
+.btn, .action-btn, .toggle-btn,.start-btn{
+    padding:14px 25px;border:none;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;font-size:17px;transition: all 0.3s;width:100%;margin-top:25px;
+}
+.btn:hover,.start-btn:hover, .action-btn:hover{background:var(--accent-hover);transform:translateY(-2px);}
 
-form{
-display: block;
-text-align: right;
-box-sizing: border-box;
+/* زر تتبع الوجبات */
+#goToTrackerBtn {
+    background-color: var(--success);
+    margin-top: 15px;
+}
+#goToTrackerBtn:hover {
+    background-color: #0b9e6e;
 }
 
-#activity, #goal, #proteinPercent, #bodyType, #bodyFat {
-margin-top: 20px;
-}
-
+/* === 3. أنماط حاسبة السعرات (Cal Track) === */
 .row {
-display: flex;
-gap: 20px;
-width: 100%;
-margin-top: 20px;
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    margin-top: 20px;
 }
 .row > div {
-flex: 1 1 50%;
-max-width: none; 
-box-sizing: border-box;
+    flex: 1 1 50%;
+    max-width: none; 
+    box-sizing: border-box;
 }
-.row input, .row select {
-width: 100% !important;
-}
-
 .results{margin-top:30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;}
 .result-item{padding:20px;border-radius:16px;background:var(--bg-light);box-shadow:0 4px 10px rgba(0,0,0,0.08);text-align:center;transition:all 0.3s;}
 body.dark .result-item{background:#3c3c3c;box-shadow:0 4px 10px rgba(0,0,0,0.3);}
@@ -82,25 +94,18 @@ body.dark .small{color:#a0a0a0;}
 .macro-bar{height:10px;border-radius:999px;background:#e0e0e0;overflow:hidden;margin-top:3px;width:100%;}
 body.dark .macro-bar{background:#333;}
 .macro-fill{height:100%;transform-origin:right;transform:scaleX(0);transition:transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);}
+
+/* أنماط شاشة البداية */
 .landing-container{
-max-width:550px;
-padding:40px;
-text-align:center;
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-flex-grow: 1;
-box-sizing: border-box;
-}
-@media (min-width: 768px) {
-.landing-container {
-height: 100vh;
-margin: auto;
-}
-body:not(.dark) {
-justify-content: center;
-}
+    max-width:550px;
+    padding:40px;
+    text-align:center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    box-sizing: border-box;
 }
 .logo-title{font-size:42px;font-weight:900;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;justify-content:center;}
 .logo-icon{font-size:48px;margin-left:15px;color:var(--accent);}
@@ -110,43 +115,292 @@ body.dark .subtitle{color:var(--text-dark);}
 .feature-item{display:flex;align-items:center;margin-bottom:15px;font-size:17px;font-weight:500;justify-content:flex-end;}
 .feature-icon{color:var(--success);font-size:24px;margin-right:10px;}
 .start-btn{min-width:300px;font-size:18px;margin-top:10px;}
-.toggle-btn{position:absolute;top:20px;right:20px;width:auto;padding:10px 15px;margin:0;font-size:14px;}
+
+/* زر تبديل الوضع (Fixed) */
+.toggle-btn{
+    position:fixed; 
+    top:20px;
+    right:20px;
+    width:auto;
+    padding:10px 15px;
+    margin:0;
+    font-size:14px;
+    z-index: 1000;
+}
 footer{text-align:center;margin-top:20px;padding:10px 0;font-size:13px;color:#9ca3af;}
 body.dark footer{color:#6b7280;}
 
-/* تعديلات التوافق للشاشات الصغيرة */
+/* === 4. أنماط تتبع الوجبات (Nutri Track) === */
+.input-group {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap; 
+}
+
+.form-control {
+    flex: 1 1 200px; 
+}
+#addMealBtn {
+    background-color: var(--success); 
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.1s;
+    white-space: nowrap;
+    height: 44px; 
+    margin-top: 0;
+}
+#addMealBtn:hover {
+    background-color: #0b9e6e;
+    transform: translateY(-1px); 
+}
+
+/* زر تصفير الوجبات (Reset Button Style) */
+.reset-meals-btn {
+    background-color: var(--danger); 
+    margin-top: 15px; 
+    padding: 14px 25px; 
+    font-size: 17px;
+    width: 100%;
+    margin-bottom: 25px; 
+}
+.reset-meals-btn:hover {
+    background-color: #c82333;
+}
+
+
+#mealList {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+#mealList li {
+    background-color: var(--card-light); 
+    padding: 20px 25px; 
+    margin-bottom: 15px; 
+    border-radius: 15px; 
+    box-shadow: var(--shadow-light); 
+    border-right: 6px solid var(--accent); 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px; 
+    flex-wrap: wrap;
+    transition: all 0.3s ease-in-out;
+    cursor: default; 
+}
+#mealList li:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+}
+body.dark #mealList li { 
+    background-color: var(--card-dark); 
+    box-shadow: var(--shadow-dark); 
+    border-right: 6px solid var(--accent); 
+}
+
+.meal-details {
+    font-weight: 800; 
+    color: var(--text-light);
+    font-size: 18px;
+    flex-basis: auto; 
+    flex-grow: 1; 
+    min-width: 150px;
+}
+body.dark .meal-details { color: var(--text-dark); }
+
+.macros-list {
+    flex-basis: auto; 
+    font-size: 15px;
+    color: #6c757d;
+    display: flex; 
+    gap: 15px; 
+    flex-wrap: wrap;
+    flex-grow: 2; 
+    justify-content: flex-end; 
+}
+body.dark .macros-list { color: #a0a0a0; }
+.macros-list strong {
+    color: var(--text-light); 
+    font-size: 16px;
+    display: inline-block;
+    min-width: 40px; 
+}
+body.dark .macros-list strong { color: var(--text-dark); }
+
+.delete-btn {
+    background-color: var(--danger); 
+    color: white;
+    border: none;
+    padding: 10px 18px; 
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.1s;
+    white-space: nowrap; 
+}
+.delete-btn:hover {
+    background-color: #c82333; 
+    transform: translateY(-1px);
+}
+
+.totals-summary {
+    margin-top: 40px;
+    padding: 25px;
+    background-color: var(--bg-light); 
+    border-radius: 12px;
+    text-align: center;
+}
+body.dark .totals-summary { background-color: #3c3c3c; }
+
+/* شبكة الـ Target/Remaining */
+.totals-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+    gap: 10px; 
+}
+
+.total-item {
+    padding: 15px;
+    background-color: var(--card-light);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s;
+    border-top: 4px solid; 
+}
+body.dark .total-item { background-color: var(--card-dark); }
+
+.total-item p {
+    margin: 0;
+    font-size: 13px; 
+    font-weight: 600;
+    color: #6c757d;
+}
+body.dark .total-item p { color: #a0a0a0; }
+
+.total-item span {
+    display: block;
+    font-size: 28px; 
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    margin-top: 5px;
+}
+.total-item span strong {
+    font-weight: 900;
+}
+
+/* ألوان الماكروز النهائية */
+#totalCalories { border-color: var(--warning); }
+#totalCalories span { color: var(--warning); }
+#totalProtein { border-color: var(--success); } 
+#totalProtein span { color: var(--success); }
+#totalCarbs { border-color: var(--accent); } 
+#totalCarbs span { color: var(--accent); }
+#totalFat { border-color: var(--danger); } 
+#totalFat span { color: var(--danger); }
+
+/* فئة لتطبيق تلاشي الخروج */
+.screen-out {
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+    pointer-events: none;
+}
+
+/* أنماط الفواصل المزخرفة */
+.decorative-divider {
+    height: 1px;
+    margin: 30px 0;
+    background: linear-gradient(to right, 
+        transparent, 
+        var(--text-light) 10%, 
+        var(--text-light) 90%, 
+        transparent
+    );
+    border: none;
+    opacity: 0.3; 
+    transition: all 0.4s;
+    width: 100%;
+}
+body.dark .decorative-divider {
+    background: linear-gradient(to right, 
+        transparent, 
+        var(--text-dark) 10%, 
+        var(--text-dark) 90%, 
+        transparent
+    );
+    opacity: 0.2;
+}
+
+
+/* === 5. التجاوب (Media Queries) === */
 @media (max-width:768px){
-form{display: block;}
-.row{
-flex-direction:column;
-gap: 0;
-margin-top: 0;
-}
-.row > div {
-margin-top: 15px;
-max-width: 100%;
-}
-.results{grid-template-columns:1fr;}.macro-grid{grid-column:span 1;}
+    .container { margin: 15px; padding: 20px; }
+    form{display: block;}
+    .row{
+        flex-direction:column;
+        gap: 0;
+        margin-top: 0;
+    }
+    .row > div {
+        margin-top: 15px;
+        max-width: 100%;
+    }
+    .results{grid-template-columns:1fr;}.macro-grid{grid-column:span 1;}
+    .input-group { flex-direction: column; align-items: stretch; }
+    .form-control { flex: 1 1 100%; }
+    #addMealBtn { width: 100%; margin-top: 10px; height: auto; }
+    
+    /* تعديل شبكة التوتال في الجوال */
+    .totals-grid { 
+        grid-template-columns: 1fr 1fr; 
+        gap: 10px; 
+    }
+    .total-item { flex: 1 1 100%; }
+    
+    #mealList li { 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 10px; 
+    }
+    .meal-details { 
+        flex-basis: 100%; 
+        min-width: auto;
+    }
+    .macros-list {
+        flex-basis: 100%;
+        justify-content: flex-start; 
+        gap: 10px;
+    }
+    .delete-btn { 
+        flex-basis: 100%; 
+        margin-top: 10px;
+    }
 }
 .hidden{display:none !important;}
 </style>
-
 </head>    
 <body>    
 <button class="toggle-btn" onclick="toggleMode()"><i class="fas fa-moon"></i> تبديل الوضع</button>
 
 <div id="landingScreen" class="container landing-container">    
   <div class="logo-title">    
-    <span class="logo-icon"><i class="fas fa-dumbbell"></i></span> Cal Track    
+    <span class="logo-icon"><i class="fas fa-dumbbell"></i></span> Calori Track    
   </div>    
   <div class="subtitle">الخوارزمية الأكثر دقة لتحديد احتياجك من السعرات والماكروز في كمال الأجسام.</div>    
   <ul class="features-list">    
     <li class="feature-item">حساب معدل كتلة الجسم (BMI) واجمالي السعرات (TDEE)<span class="feature-icon"><i class="fas fa-check-circle"></i></span></li>    
     <li class="feature-item">توزيع دقيق للبروتين والكربوهيدرات والدهون حسب الهدف.<span class="feature-icon"><i class="fas fa-check-circle"></i></span></li>    
-    <li class="feature-item">دعم وضع الجسم الرياضي (Bodybuilding) للحصول على نتائج أدق.<span class="feature-icon"><i class="fas fa-check-circle"></i></span></li>    
-    <li class="feature-item">Developed By Mohamed Abd El-Aziz<span class="feature-icon"><i class="fas fa-check-circle"></i></span></li>    
+    <li class="feature-item">حساب القيم الغذائية داخل الأطعمة.<span class="feature-icon"><i class="fas fa-check-circle"></i></span></li>    
+        <li class="feature-item">Developed By Mohamed Abd El-Aziz<span class="feature-icon"><i class="fas fa-check-circle"></i></span></li>    
   </ul>    
-  <button class="start-btn" onclick="showCalculator()"><i class="fas fa-calculator"></i> Calculate Now</button>    
+  <button class="start-btn" onclick="showScreen('calculatorScreen')"><i class="fas fa-calculator"></i> Calculate Now</button>    
 </div>
 
 <div id="calculatorScreen" class="container hidden" style="max-width:700px;">    
@@ -184,6 +438,8 @@ max-width: 100%;
     <label for="bodyFat"><i class="fas fa-percent"></i> نسبة الدهون في الجسم % — اختياري</label>    
     <input type="number" id="bodyFat" min="3" max="60" step="0.1" placeholder="اختياري" />    
     <button class="btn" type="submit"><i class="fas fa-chart-line"></i> احسب النتائج الآن</button>    
+    
+    <button class="btn" id="goToTrackerBtn" type="button" onclick="showScreen('nutriTrackerScreen')"><i class="fas fa-utensils"></i> تتبع وجباتي</button>
   </form>      
   
   <div class="results">    
@@ -210,20 +466,196 @@ max-width: 100%;
   </div>    
 </div>    
 
+<div id="nutriTrackerScreen" class="container hidden">
+    <h1><i class="fas fa-utensils"></i> Nutri Track</h1>
+
+    <div class="input-group">
+        <div class="form-control">
+            <label for="searchInput">بحث عن طعام:</label>
+            <input type="text" id="searchInput" placeholder="">
+        </div>
+        
+        <div class="form-control">
+            <label for="foodSelect">اختر الطعام:</label>
+            <select id="foodSelect">
+                <option value="">اختر طعاماً</option>
+            </select>
+        </div>
+        
+        <div class="form-control">
+            <label for="foodAmount">الكمية (جرام):</label>
+            <input type="number" id="foodAmount" min="1" value="100">
+        </div>
+
+        <button id="addMealBtn" class="action-btn" type="button" onclick="handleAddMeal()"><i class="fas fa-plus-circle"></i> إضافة وجبة</button>
+    </div>
+
+    <button class="action-btn reset-meals-btn" type="button" onclick="clearAllMeals()"><i class="fas fa-trash-alt"></i> تصفير جميع الوجبات</button>
+    
+    <div class="decorative-divider"></div>
+
+    <h2>قائمة الوجبات المضافة</h2>
+    <ul id="mealList">
+        </ul>
+    
+    <div class="decorative-divider"></div>
+
+    <div class="totals-summary">
+        <h2>الإجمالي اليومي للعناصر الغذائية</h2>
+        <div class="totals-grid">
+            <div class="total-item" id="totalCalories">
+                <p>المستهلك (كالوري)</p>
+                <span>0.0</span>
+            </div>
+            <div class="total-item" style="border-color: var(--warning);">
+                <p>الهدف / المتبقي</p>
+                <span style="font-size:24px;">
+                    <strong id="targetSummaryCal">0</strong> / <strong id="remainingSummaryCal" style="color:var(--warning);">0</strong>
+                </span>
+            </div>
+
+            <div class="total-item" id="totalProtein">
+                <p>المستهلك (بروتين)</p>
+                <span>0.0</span>
+            </div>
+            <div class="total-item" style="border-color: var(--success);">
+                <p>الهدف / المتبقي</p>
+                <span style="font-size:24px;">
+                    <strong id="targetSummaryProtein">0</strong> / <strong id="remainingSummaryProtein" style="color:var(--success);">0</strong>
+                </span>
+            </div>
+
+            <div class="total-item" id="totalCarbs">
+                <p>المستهلك (كربوهيدرات)</p>
+                <span>0.0</span>
+            </div>
+            <div class="total-item" style="border-color: var(--accent);">
+                <p>الهدف / المتبقي</p>
+                <span style="font-size:24px;">
+                    <strong id="targetSummaryCarbs">0</strong> / <strong id="remainingSummaryCarbs" style="color:var(--accent);">0</strong>
+                </span>
+            </div>
+
+            <div class="total-item" id="totalFat">
+                <p>المستهلك (دهون)</p>
+                <span>0.0</span>
+            </div>
+            <div class="total-item" style="border-color: var(--danger);">
+                <p>الهدف / المتبقي</p>
+                <span style="font-size:24px;">
+                    <strong id="targetSummaryFat">0</strong> / <strong id="remainingSummaryFat" style="color:var(--danger);">0</strong>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <footer>By / Cap Mohamed Abd-El Aziz</footer>    
 
 <script>    
+// =================================================================
+// 🔥 المتغيرات العامة (Global Variables) 
+// =================================================================
+let foodSelect, searchInput, foodAmount, addMealBtn, mealList, totalCalories, totalProtein, totalCarbs, totalFat;
+
+let targetMacros = {
+    targetCal: 0,
+    proteinGr: 0,
+    carbGr: 0,
+    fatGr: 0,
+};
+const STORAGE_KEY = 'caloriTrackData';
+let userMeals = []; 
+
+// =================================================================
+// دالة التحكم في الشاشات (معدلة للانتقال والتمرير وإعادة تعيين الأهداف)
+// =================================================================
+
+function initNutriTrackerElements() {
+    foodSelect = document.getElementById('foodSelect');
+    searchInput = document.getElementById('searchInput');
+    foodAmount = document.getElementById('foodAmount');
+    addMealBtn = document.getElementById('addMealBtn');
+    mealList = document.getElementById('mealList');
+    
+    // ربط عناصر الملخص
+    totalCalories = document.getElementById('totalCalories').querySelector('span');
+    totalProtein = document.getElementById('totalProtein').querySelector('span');
+    totalCarbs = document.getElementById('totalCarbs').querySelector('span');
+    totalFat = document.getElementById('totalFat').querySelector('span');
+    
+    setupListeners(); 
+}
+
+function showScreen(screenId) {
+    const screens = ['landingScreen', 'calculatorScreen', 'nutriTrackerScreen'];
+    const currentScreenId = screens.find(id => !document.getElementById(id).classList.contains('hidden'));
+    const currentScreen = document.getElementById(currentScreenId);
+    const newScreen = document.getElementById(screenId);
+
+    window.scrollTo(0, 0); 
+    
+    // منطق إعادة تعيين الأهداف عند الانتقال إلى شاشة التتبع
+    if (screenId === 'nutriTrackerScreen') {
+        
+        if (!totalCalories) initNutriTrackerElements();
+
+        // إذا لم يتم تحديث الأهداف للتو (من شاشة الحاسبة) أو الهدف الحالي صفر
+        if (currentScreenId !== 'calculatorScreen' || targetMacros.targetCal === 0) {
+            targetMacros = {
+                targetCal: 0,
+                proteinGr: 0,
+                carbGr: 0,
+                fatGr: 0,
+            };
+            // حفظ الأهداف الصفرية لتجنب تحميل أهداف قديمة من localStorage لا تتطابق مع المدخلات الجديدة
+            saveDataToLocalStorage(); 
+        }
+    }
+
+
+    if (currentScreen && currentScreen !== newScreen) {
+        currentScreen.classList.add('screen-out');
+
+        setTimeout(() => {
+            currentScreen.classList.remove('screen-out');
+            currentScreen.classList.add('hidden');
+
+            newScreen.classList.remove('hidden');
+
+            // تهيئة شاشة التتبع إذا لزم الأمر
+            if (screenId === 'nutriTrackerScreen') {
+                initNutriTrackerElements(); 
+                loadFoodOptions(foodData);  
+                updateTotals();             
+            }
+        }, 400); 
+    } else {
+        // إذا لم تكن هناك شاشة سابقة (أول تحميل)، أظهر الشاشة الجديدة مباشرة
+        screens.forEach(id => document.getElementById(id).classList.add('hidden'));
+        newScreen.classList.remove('hidden');
+        
+        if (screenId === 'nutriTrackerScreen') {
+            initNutriTrackerElements(); 
+            loadFoodOptions(foodData);  
+            updateTotals();             
+        }
+    }
+}
+
+// =================================================================
+// دالة تبديل الوضع
+// =================================================================
 function toggleMode(){    
   document.body.classList.toggle('dark');    
   const btn = document.querySelector('.toggle-btn');    
   btn.innerHTML = document.body.classList.contains('dark') ? '<i class="fas fa-sun"></i> تبديل الوضع' : '<i class="fas fa-moon"></i> تبديل الوضع';    
 }    
   
-function showCalculator(){    
-  document.getElementById('landingScreen').classList.add('hidden');    
-  document.getElementById('calculatorScreen').classList.remove('hidden');    
-}    
-  
+// =================================================================
+// 1. منطق حاسبة السعرات والماكروز (Project 1) - معدل للحفظ
+// =================================================================
 function calculate(){    
   const weight = parseFloat(document.getElementById('weight').value);    
   const height = parseFloat(document.getElementById('height').value);    
@@ -234,7 +666,6 @@ function calculate(){
   const bodyType = document.getElementById('bodyType').value;    
   const bodyFatInput = parseFloat(document.getElementById('bodyFat').value);    
   
-  // تم تثبيت نسبة البروتين على 15% كما طلبت
   let proteinPct = 15; 
   
   if(!weight || !height || !age || !activity){alert('يرجى إدخال جميع البيانات المطلوبة'); return;}    
@@ -268,7 +699,7 @@ function calculate(){
     }  
   }  
   
-  let fatPct = 25; // نسبة الدهون ثابتة (بافتراض نفس القيمة من الكود الأصلي)
+  let fatPct = 25; // نسبة الدهون ثابتة 
   let proteinCal = targetCal * (proteinPct / 100);    
   let proteinGr = proteinCal / 4;    
   let fatCal = targetCal * (fatPct / 100);    
@@ -293,8 +724,309 @@ function calculate(){
   
   document.getElementById('protBar').style.transform=`scaleX(${proteinCal/targetCal})`;    
   document.getElementById('carbBar').style.transform=`scaleX(${carbCal/targetCal})`;    
-  document.getElementById('fatBar').style.transform=`scaleX(${fatCal/targetCal})`;    
-}    
+  document.getElementById('fatBar').style.transform=`scaleX(${fatCal/targetCal})`;
+
+  // حفظ الماكروز المستهدفة في المتغير العالمي
+  targetMacros = {
+      targetCal: Math.round(targetCal),
+      proteinGr: Math.round(proteinGr),
+      carbGr: Math.round(carbGr),
+      fatGr: Math.round(fatGr),
+  };
+  
+  // حفظ البيانات في التخزين المحلي (يشمل الأهداف والوجبات)
+  saveDataToLocalStorage();
+  
+  // تحديث إجماليات التتبع
+  updateTotals();
+}
+
+// =================================================================
+// دالة حفظ البيانات في التخزين المحلي (localStorage)
+// =================================================================
+function saveDataToLocalStorage() {
+    const data = {
+        target: targetMacros,
+        meals: userMeals,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// =================================================================
+// دالة تحميل البيانات من التخزين المحلي (localStorage)
+// =================================================================
+function loadDataFromLocalStorage() {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        
+        // تحميل الأهداف 
+        if (data.target) {
+            targetMacros = data.target;
+            // عرضها في شاشة الحاسبة كآخر أهداف تم حسابها
+            document.getElementById('targetCal').innerText = targetMacros.targetCal || '0';
+            document.getElementById('proteinGr').innerText = targetMacros.proteinGr || '0';
+            document.getElementById('carbGr').innerText = targetMacros.carbGr || '0';
+            document.getElementById('fatGr').innerText = targetMacros.fatGr || '0';
+        }
+        
+        // تحميل الوجبات 
+        if (data.meals) {
+            userMeals = data.meals;
+        }
+    }
+}
+
+
+// =================================================================
+// 2. منطق تتبع الوجبات (Project 2) 
+// =================================================================
+const foodData = [
+    // --- الأطباق الشعبية المصرية الرئيسية والكربوهيدرات ---
+    { id: 1, name: "فول مدمس (مطبوخ)", calories: 104, protein: 7.6, carbs: 17.0, fat: 2.1 },
+    { id: 2, name: "طعمية/فلافل (مقلية)", calories: 333, protein: 13.3, carbs: 32.7, fat: 17.9 },
+    { id: 3, name: "كشري (خليط جاهز)", calories: 154, protein: 5.6, carbs: 29.5, fat: 1.8 },
+    { id: 4, name: "خبز بلدي (عيش بلدي)", calories: 257, protein: 8.5, carbs: 54.0, fat: 1.5 },
+    { id: 5, name: "مكرونة بشاميل (طبق جاهز)", calories: 195, protein: 10.0, carbs: 18.0, fat: 9.0 },
+    { id: 6, name: "إندومي (مكرونة سريعة التحضير)", calories: 430, protein: 8.0, carbs: 56.0, fat: 20.0 }, 
+    { id: 7, name: "فطير مشلتت", calories: 375, protein: 7.0, carbs: 40.0, fat: 21.0 },
+    // --- لحوم ودواجن وأسماك ---
+    { id: 101, name: "صدور دجاج (مطبوخة)", calories: 165, protein: 31.0, carbs: 0.0, fat: 3.6 },
+    { id: 102, name: "لحم بقري قليل الدهن (مطبوخ)", calories: 250, protein: 26.0, carbs: 0.0, fat: 15.0 },
+    { id: 103, name: "سمك بلطي (مشوي)", calories: 129, protein: 26.0, carbs: 0.0, fat: 2.7 },
+    { id: 104, name: "كبدة بتلو (مطبوخة)", calories: 135, protein: 20.4, carbs: 4.0, fat: 3.6 },
+    { id: 105, name: "بيض (مسلوق)", calories: 155, protein: 13.0, carbs: 1.1, fat: 11.0 },
+    { id: 106, name: "سمك ماكريل (مشوي/مطبوخ)", calories: 205, protein: 25.0, carbs: 0.0, fat: 13.9 }, 
+    { id: 107, name: "تونة معلبة (في الماء ومصفاة)", calories: 109, protein: 25.0, carbs: 0.0, fat: 0.8 }, 
+    // --- حبوب وكربوهيدرات (شائعة) ---
+    { id: 201, name: "أرز أبيض (مطبوخ)", calories: 130, protein: 2.7, carbs: 28.0, fat: 0.3 },
+    { id: 202, name: "أرز بالشعرية (مطبوخ)", calories: 170, protein: 3.5, carbs: 30.0, fat: 4.0 },
+    { id: 203, name: "مكرونة (مطبوخة)", calories: 158, protein: 5.8, carbs: 31.0, fat: 0.9 },
+    { id: 204, name: "بطاطس محمرة (مقلية)", calories: 312, protein: 3.8, carbs: 41.0, fat: 15.0 },
+    { id: 205, name: "شوفان (مجفف، غير مطبوخ)", calories: 389, protein: 16.9, carbs: 66.3, fat: 6.9 },
+    { id: 206, name: "بطاطا حلوة (مشوية)", calories: 90, protein: 2.0, carbs: 20.0, fat: 0.1 }, // 🔥🔥 العنصر الجديد 🔥🔥
+    // --- المكسرات والبذور والدهون ---
+    { id: 301, name: "طحينة سائلة", calories: 595, protein: 25.5, carbs: 25.0, fat: 53.7 },
+    { id: 302, name: "لوز نيئ", calories: 579, protein: 21.1, carbs: 21.6, fat: 49.9 },
+    { id: 303, name: "بندق نيئ", calories: 628, protein: 15.0, carbs: 16.7, fat: 60.7 },
+    { id: 304, name: "عين الجمل/جوز", calories: 654, protein: 15.2, carbs: 13.7, fat: 65.2 },
+    { id: 307, name: "فول سوداني (نيئ/محمص)", calories: 567, protein: 25.8, carbs: 16.1, fat: 49.2 },
+    { id: 308, name: "زبدة فول سوداني (طبيعية)", calories: 588, protein: 25.1, carbs: 20.1, fat: 50.4 },
+    { id: 305, name: "زيت زيتون", calories: 884, protein: 0.0, carbs: 0.0, fat: 100.0 }, 
+    { id: 306, name: "سمن بلدي", calories: 900, protein: 0.0, carbs: 0.0, fat: 100.0 },
+    // --- ألبان ومنتجاتها ---
+    { id: 401, name: "جبنة بيضاء (قليلة الدسم)", calories: 110, protein: 15.0, carbs: 3.0, fat: 4.0 },
+    { id: 402, name: "جبنة رومي", calories: 385, protein: 25.0, carbs: 2.0, fat: 30.0 },
+    { id: 403, name: "لبن/حليب كامل الدسم", calories: 61, protein: 3.2, carbs: 4.8, fat: 3.3 },
+    { id: 404, name: "زبادي (طبيعي)", calories: 61, protein: 3.5, carbs: 4.7, fat: 3.3 },
+    { id: 405, name: "جبنة قريش", calories: 98, protein: 10.3, carbs: 3.4, fat: 4.8 }, 
+    // --- فواكه وخضروات وسلطات ---
+    { id: 501, name: "سلطة خضراء (أساسية)", calories: 20, protein: 1.0, carbs: 4.0, fat: 0.1 },
+    { id: 502, name: "طماطم", calories: 18, protein: 0.9, carbs: 3.9, fat: 0.2 },
+    { id: 503, name: "خيار", calories: 15, protein: 0.7, carbs: 3.6, fat: 0.1 },
+    { id: 504, name: "باذنجان (مقلي)", calories: 100, protein: 1.0, carbs: 10.0, fat: 6.5 },
+    { id: 505, name: "موز", calories: 89, protein: 1.1, carbs: 23.0, fat: 0.3 },
+    { id: 506, name: "بلح رطب", calories: 277, protein: 1.8, carbs: 75.0, fat: 0.2 },
+    // --- سكريات ومشروبات ---
+    { id: 601, name: "عسل نحل طبيعي", calories: 304, protein: 0.3, carbs: 82.4, fat: 0.0 },
+    { id: 602, name: "بسبوسة (شريحة)", calories: 350, protein: 5.0, carbs: 55.0, fat: 13.0 },
+    { id: 603, name: "شاي (محلى بسكر)", calories: 25, protein: 0.0, carbs: 6.0, fat: 0.0 },
+    { id: 604, name: "عصير قصب", calories: 70, protein: 0.2, carbs: 18.0, fat: 0.1 }
+];
+
+
+// تحميل خيارات الطعام
+function loadFoodOptions(data) {
+    if (!foodSelect) return; 
+    foodSelect.innerHTML = '<option value="">اختر طعاماً</option>';
+    data.forEach(food => {
+        const option = document.createElement('option');
+        option.value = food.id;
+        option.textContent = food.name;
+        foodSelect.appendChild(option);
+    });
+}
+
+// دالة تجميع المستمعين لتجنب تكرار الكود
+function setupListeners() {
+    // إزالة المستمعين السابقين لتجنب تكرار الحدث عند كل تنقل
+    searchInput.removeEventListener('input', handleSearchInput);
+    
+    // ربط مستمع البحث وتحديث القائمة المنسدلة
+    searchInput.addEventListener('input', handleSearchInput);
+}
+
+function handleSearchInput(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredFoods = foodData.filter(food =>
+        food.name.toLowerCase().includes(searchTerm)
+    );
+    loadFoodOptions(filteredFoods);
+    
+    if (filteredFoods.length > 0) {
+         if (foodSelect.value === '' || !foodSelect.querySelector(`option[value="${foodSelect.value}"]`)) {
+             foodSelect.value = filteredFoods[0].id;
+         }
+    } else {
+         foodSelect.value = '';
+    }
+}
+
+
+/**
+ * دالة لحساب الماكروز لوجبة محددة. 
+ */
+function calculateMacros(food, amount) {
+    const factor = amount / 100;
+    return {
+        calories: Math.round(food.calories * factor), 
+        protein: (food.protein * factor),
+        carbs: (food.carbs * factor),
+        fat: (food.fat * factor)
+    };
+}
+
+// دالة إضافة الوجبة 
+function handleAddMeal() {
+    const foodId = foodSelect.value;
+    const amount = parseFloat(foodAmount.value);
+
+    if (!foodId || amount <= 0 || isNaN(amount)) {
+        alert('الرجاء اختيار طعام وإدخال كمية صحيحة (بالجرام).');
+        return;
+    }
+
+    const food = foodData.find(f => f.id == foodId);
+    if (!food) return;
+
+    const macros = calculateMacros(food, amount);
+
+    const newMeal = {
+        id: Date.now(),
+        foodName: food.name,
+        amount: amount,
+        ...macros
+    };
+
+    userMeals.push(newMeal);
+    renderMeals();
+    updateTotals();
+    
+    // حفظ الوجبات في التخزين المحلي
+    saveDataToLocalStorage(); 
+
+    // مسح حقل البحث وإعادة تحميل القائمة الأصلية
+    foodAmount.value = '100';
+    searchInput.value = '';
+    loadFoodOptions(foodData); 
+}
+
+
+// عرض قائمة الوجبات
+function renderMeals() {
+    if (!mealList) initNutriTrackerElements(); 
+    mealList.innerHTML = '';
+    userMeals.forEach(meal => {
+        const li = document.createElement('li');
+        
+        li.innerHTML = `
+            <span class="meal-details">
+                <strong>${meal.foodName}</strong> (${meal.amount}g)
+            </span>
+            <span class="macros-list">
+                <strong>${meal.calories}</strong> كالوري | 
+                <strong>${meal.protein.toFixed(1)}</strong> بروتين | 
+                <strong>${meal.carbs.toFixed(1)}</strong> كربوهيدرات | 
+                <strong>${meal.fat.toFixed(1)}</strong> دهون 
+            </span>
+            <button class="delete-btn" data-id="${meal.id}" onclick="deleteMeal(event)">حذف</button>
+        `;
+        
+        mealList.appendChild(li);
+    });
+}
+
+
+// حذف وجبة
+function deleteMeal(e) {
+    const mealId = parseInt(e.target.dataset.id);
+    userMeals = userMeals.filter(meal => meal.id !== mealId);
+    renderMeals();
+    updateTotals();
+    
+    // حفظ الوجبات في التخزين المحلي
+    saveDataToLocalStorage(); 
+}
+
+// دالة تصفير وحذف جميع الوجبات
+function clearAllMeals() {
+    if (!confirm("هل أنت متأكد من رغبتك في حذف جميع الوجبات المُضافة لهذا اليوم؟")) {
+        return;
+    }
+
+    userMeals = []; // تصفير قائمة الوجبات
+    renderMeals();  // تحديث العرض
+    updateTotals(); // تحديث إجمالي السعرات والأهداف المتبقية
+    saveDataToLocalStorage(); // حفظ التغيير (قائمة فارغة)
+    alert("تم تصفير جميع الوجبات بنجاح!");
+}
+
+
+/**
+ * دالة تحديث الإجماليات وعرض المتبقي.
+ */
+function updateTotals() {
+    if (!totalCalories) return; 
+
+    const totals = userMeals.reduce((acc, meal) => {
+        acc.calories += meal.calories; 
+        acc.protein += meal.protein;
+        acc.carbs += meal.carbs;
+        acc.fat += meal.fat;
+        return acc;
+    }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+
+    // عرض الإجمالي المستهلك
+    totalCalories.textContent = Math.round(totals.calories); 
+    totalProtein.textContent = totals.protein.toFixed(1);
+    totalCarbs.textContent = totals.carbs.toFixed(1);
+    totalFat.textContent = totals.fat.toFixed(1);
+    
+    // عرض الأهداف والمتبقي
+    // الهدف الحالي
+    const targetCals = targetMacros.targetCal || 0;
+    const targetProt = targetMacros.proteinGr || 0;
+    const targetCarbs = targetMacros.carbGr || 0;
+    const targetFat = targetMacros.fatGr || 0;
+
+    // المتبقي (نتأكد ألا تقل القيمة عن صفر)
+    const remainingCals = Math.max(0, targetCals - totals.calories);
+    const remainingProt = Math.max(0, targetProt - totals.protein);
+    const remainingCarbs = Math.max(0, targetCarbs - totals.carbs);
+    const remainingFat = Math.max(0, targetFat - totals.fat);
+
+    // تحديث شاشة الملخص
+    document.getElementById('targetSummaryCal').textContent = targetCals;
+    document.getElementById('remainingSummaryCal').textContent = Math.round(remainingCals);
+    
+    document.getElementById('targetSummaryProtein').textContent = targetProt;
+    document.getElementById('remainingSummaryProtein').textContent = remainingProt.toFixed(1);
+    
+    document.getElementById('targetSummaryCarbs').textContent = targetCarbs;
+    document.getElementById('remainingSummaryCarbs').textContent = remainingCarbs.toFixed(1);
+    
+    document.getElementById('targetSummaryFat').textContent = targetFat;
+    document.getElementById('remainingSummaryFat').textContent = remainingFat.toFixed(1);
+}
+
+// تهيئة التطبيق عند التحميل - نبدأ بشاشة البداية
+document.addEventListener('DOMContentLoaded', () => {
+    // تحميل البيانات المحفوظة عند بدء التشغيل
+    loadDataFromLocalStorage();
+    
+    // التأكد من أننا نبدأ بشاشة البداية
+    showScreen('landingScreen'); 
+});
 </script>    
 </body>    
 </html>
